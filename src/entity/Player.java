@@ -49,19 +49,33 @@ public class Player extends Entity {
         speed = 4;
         direction = "down";
     }
-    public void getPlayerImage(){
-        try{
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
-        }catch(IOException e){
-            e.printStackTrace();
+    private static final String IMG_PLACEHOLDER_PATH = "/resources/placeholder/missing.png";
+    private BufferedImage loadImage(String path) {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(getClass().getResourceAsStream(path));
+            System.out.printf("Successfully loaded \"%s\"!\r\n", path);
+        } catch (Exception e) {
+            try {
+                System.err.printf("Couldn't load \"%s\" because:\r\n", path);
+                e.printStackTrace();
+                img = ImageIO.read(getClass().getResourceAsStream(IMG_PLACEHOLDER_PATH));
+                System.out.printf("Loaded placeholder for \"%s\"\r\n", path);
+            } catch (Exception ep) {
+                throw new RuntimeException(String.format("Couldn't load placeholder \"%s\"", IMG_PLACEHOLDER_PATH), ep);
+            }
         }
+        return img;
+    }
+    private void getPlayerImage(){
+        up1    = loadImage("/player/boy_up_1.png");
+        up2    = loadImage("/player/boy_up_2.png");
+        down1  = loadImage("/player/boy_down_1.png");
+        down2  = loadImage("/player/boy_down_2.png");
+        left1  = loadImage("/player/boy_left_1.png");
+        left2  = loadImage("/player/boy_left_2.png");
+        right1 = loadImage("/player/boy_right_1.png");
+        right2 = loadImage("/player/boy_right_2.png");
     }
 
     private AttackStrategy attackStrategy;
