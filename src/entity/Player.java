@@ -68,14 +68,14 @@ public class Player extends Entity {
         return img;
     }
     private void getPlayerImage(){
-        up1    = loadImage("/player/boy_up_1.png");
-        up2    = loadImage("/player/boy_up_2.png");
-        down1  = loadImage("/player/boy_down_1.png");
-        down2  = loadImage("/player/boy_down_2.png");
-        left1  = loadImage("/player/boy_left_1.png");
-        left2  = loadImage("/player/boy_left_2.png");
-        right1 = loadImage("/player/boy_right_1.png");
-        right2 = loadImage("/player/boy_right_2.png");
+        up1    = loadImage("/resources/player/boy_up_1.png");
+        up2    = loadImage("/resources/player/boy_up_2.png");
+        down1  = loadImage("/resources/player/boy_down_1.png");
+        down2  = loadImage("/resources/player/boy_down_2.png");
+        left1  = loadImage("/resources/player/boy_left_1.png");
+        left2  = loadImage("/resources/player/boy_left_2.png");
+        right1 = loadImage("/resources/player/boy_right_1.png");
+        right2 = loadImage("/resources/player/boy_right_2.png");
     }
 
     private AttackStrategy attackStrategy;
