@@ -5,10 +5,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public abstract class Logger {
-    public static Logger
+    public static final Logger
         info = new PrintInfo(),
         warn = new PrintWarn(),
         err  = new PrintError();
+
+    private Logger() {}
 
     public static void outWrite(OutputStream out, String str) {
         try {
@@ -48,22 +50,22 @@ public abstract class Logger {
     public void eprintfn(String fmt, Object... args) { osprintfn(System.err, fmt, args); }
     public void eprintfn(String str) { eprintfn("%s", str); }
     public void eprintfn(Object obj) { eprintfn("%s", obj.toString()); }
-}
 
-class PrintError extends Logger {
-    @Override public void osprintf(OutputStream out, String fmt, Object... args) {
-        Logger.outWrite(out, String.format("ERROR: " + fmt, args));
+    private static class PrintError extends Logger {
+        @Override public void osprintf(OutputStream out, String fmt, Object... args) {
+            Logger.outWrite(out, String.format("ERROR: " + fmt, args));
+        }
     }
-}
-
-class PrintInfo extends Logger {
-    @Override public void osprintf(OutputStream out, String fmt, Object... args) {
-        Logger.outWrite(out, String.format("INFO: " + fmt, args));
+    
+    private static class PrintInfo extends Logger {
+        @Override public void osprintf(OutputStream out, String fmt, Object... args) {
+            Logger.outWrite(out, String.format("INFO: " + fmt, args));
+        }
     }
-}
-
-class PrintWarn extends Logger {
-    @Override public void osprintf(OutputStream out, String fmt, Object... args) {
-        Logger.outWrite(out, String.format("WARN: " + fmt, args));
+    
+    private static class PrintWarn extends Logger {
+        @Override public void osprintf(OutputStream out, String fmt, Object... args) {
+            Logger.outWrite(out, String.format("WARN: " + fmt, args));
+        }
     }
 }
