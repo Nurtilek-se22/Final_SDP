@@ -39,7 +39,7 @@ public class GamePanel extends JPanel implements Runnable {
     // GAME DATA
     public JFrame window;
     public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[10];
+    public SuperObject[] obj = new SuperObject[10];
 
     //Set players's default position
     int playerX = 100;

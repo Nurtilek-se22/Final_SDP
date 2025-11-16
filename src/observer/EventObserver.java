@@ -1,7 +1,7 @@
 package observer;
 
-import event.Event;
+import event.GameEvent;
 
 public interface EventObserver {
-    void handleEvent(Event event);
+    void handleEvent(GameEvent event);
 }

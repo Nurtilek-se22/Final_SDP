@@ -16,9 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import utils.Resources;
 import utils.Path;
+import utils.Timer;
 import main.SoundName;
 import math.FPoint;
-import event.Event;
+import event.GameEvent;
 import observer.EventObserver;
 import observer.ConsoleObserver;
 
@@ -33,12 +34,13 @@ public class Player extends Entity {
     ArrayList<EventObserver> observers = new ArrayList<>();
     
     public static final Path PATH = new Path(Resources.PATH, "player/");
+    Timer timerSprite = new Timer(0.2);
 
     public void addEventListener(EventObserver observer) {
         observers.add(observer);
     }
 
-    public void notify(Event event) {
+    public void notify(GameEvent event) {
         for (EventObserver observer : observers) {
             observer.handleEvent(event);
         }
@@ -55,15 +57,12 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
-        solidAreaDefaultX = solidArea.x;
-        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
 
-        worldX = gp.tileSize * 23;
-        worldY = gp.tileSize * 21;
-        speed = 4;
-        vec = new FPoint();
+        pos = new Point(gp.tileSize * 23, gp.tileSize * 21);
+        speedScalar = 4;
+        speed = new FPoint();
 
         frame = new Frame();
         sprite = new SpriteAtlasBuilder()
@@ -93,25 +92,25 @@ public class Player extends Entity {
         InputAdapter input = new KeyboardAdapter(keyH);
         Direction dir = null;
 
-        vec.setLocation(0, 0);
+        speed.setLocation(0, 0);
         if (input.isUp() == true){
-            vec.y -= 1;
+            speed.y -= 1;
             dir = Direction.Up;
         }
         if(keyH.downPressed == true){
-            vec.y += 1;
+            speed.y += 1;
             dir = Direction.Down;
         }
         if(keyH.leftPressed == true){
-            vec.x -= 1;
+            speed.x -= 1;
             dir = Direction.Left;
         }
         if(keyH.rightPressed == true){
-            vec.x += 1;
+            speed.x += 1;
             dir = Direction.Right;
         }
         if (dir == null) return;
-        vec.norm().scale(speed);
+        speed.norm().scale(speedScalar);
         sprite.setActiveFrame(frame, dir);
 
         if (keyH.attackPressed) {
@@ -128,14 +127,13 @@ public class Player extends Entity {
 
         // IF COLLISION IS FALSE, PLAYER CAN MOVE
         if (collisionOn == false) {
-            worldX += vec.x;
-            worldY += vec.y;
+            pos.x += speed.x;
+            pos.y += speed.y;
         }
 
-        spriteCounter++;
-        if(spriteCounter > 12) {
+        if(timerSprite.isFinished()) {
             frame.shift();
-            spriteCounter = 0;
+            timerSprite.reset();
         }
     }
 
@@ -143,38 +141,37 @@ public class Player extends Entity {
         if (i == -1) return;
         String objectName = gp.obj[i].name;
 
-        switch (objectName){
+        switch (objectName) {
             case "Key":
                 gp.playSE(SoundName.Coin);
                 hasKey++;
                 gp.obj[i] = null;
                 gp.ui.showMessage("You got a key!");
-                notify(Event.PickUpKey);
+                notify(GameEvent.PickUpKey);
                 break;
             case "Door":
-                gp.playSE(SoundName.Unlock);
-                if(hasKey >0){
+                if (hasKey > 0) {
+                    notify(GameEvent.OpenDoor);
+                    gp.playSE(SoundName.Unlock);
                     gp.obj[i] = null;
                     hasKey--;
                     gp.ui.showMessage("You opened the door!");
-                    notify(Event.OpenDoor);
-                }
-                else{
+                } else {
                     gp.ui.showMessage("You need a key!");
                 }
                 break;
             case "Boots":
+                notify(GameEvent.PickUpBoots);
                 gp.playSE(SoundName.PowerUp);
-                speed += 2;
+                speedScalar += 2;
                 gp.obj[i] = null;
                 gp.ui.showMessage("Speed up!");
-                notify(Event.PickUpBoots);
                 break;
             case "Cheat":
+                if (!gp.ui.gameFinished) notify(GameEvent.GameFinished);
                 gp.ui.gameFinished = true;
                 gp.stopMusic();
                 gp.playSE(SoundName.Fanfare);
-                notify(Event.GameFinished);
                 break;
 
         }

@@ -1,6 +1,6 @@
 package event;
 
-public enum Event {
+public enum GameEvent {
     PickUpKey,
     PickUpBoots,
     OpenDoor,
