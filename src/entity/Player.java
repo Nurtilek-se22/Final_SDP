@@ -13,10 +13,14 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import utils.Resources;
 import utils.Path;
 import main.SoundName;
 import math.FPoint;
+import event.Event;
+import observer.EventObserver;
+import observer.ConsoleObserver;
 
 public class Player extends Entity {
 
@@ -25,8 +29,20 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public int hasKey = 0;
+
+    ArrayList<EventObserver> observers = new ArrayList<>();
     
     public static final Path PATH = new Path(Resources.PATH, "player/");
+
+    public void addEventListener(EventObserver observer) {
+        observers.add(observer);
+    }
+
+    public void notify(Event event) {
+        for (EventObserver observer : observers) {
+            observer.handleEvent(event);
+        }
+    }
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -58,6 +74,8 @@ public class Player extends Entity {
                     .build()
                     .setActiveFrame(frame, Direction.Down);
         setAttackStrategy(new MagicAttack());
+
+        addEventListener(new ConsoleObserver());
     }
 
     private AttackStrategy attackStrategy;
@@ -131,6 +149,7 @@ public class Player extends Entity {
                 hasKey++;
                 gp.obj[i] = null;
                 gp.ui.showMessage("You got a key!");
+                notify(Event.PickUpKey);
                 break;
             case "Door":
                 gp.playSE(SoundName.Unlock);
@@ -138,6 +157,7 @@ public class Player extends Entity {
                     gp.obj[i] = null;
                     hasKey--;
                     gp.ui.showMessage("You opened the door!");
+                    notify(Event.OpenDoor);
                 }
                 else{
                     gp.ui.showMessage("You need a key!");
@@ -148,11 +168,13 @@ public class Player extends Entity {
                 speed += 2;
                 gp.obj[i] = null;
                 gp.ui.showMessage("Speed up!");
+                notify(Event.PickUpBoots);
                 break;
             case "Cheat":
                 gp.ui.gameFinished = true;
                 gp.stopMusic();
                 gp.playSE(SoundName.Fanfare);
+                notify(Event.GameFinished);
                 break;
 
         }

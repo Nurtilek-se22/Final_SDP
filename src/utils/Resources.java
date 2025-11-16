@@ -56,9 +56,9 @@ public final class Resources {
     }
     public static URL loadURL(Path base, String path) { return loadURL(base.getPath(path)); }
 
-    public static Clip loadClip(Path base, URL url) {
+    public static Clip loadClip(URL url) {
         AudioInputStream audio = null;
-        String path = base.getPath(url.getPath().substring(RESOURCES_PATH_LEN - 1));
+        String path = url.getPath().substring(RESOURCES_PATH_LEN - 1);
         try {
             audio = AudioSystem.getAudioInputStream(url);
         } catch (UnsupportedAudioFileException e) {
@@ -78,7 +78,6 @@ public final class Resources {
         }
         return clip;
     }
-    public static Clip loadClip(URL url) { return loadClip(PATH, url); }
 
     public static BufferedImage loadImage(String path) {
         BufferedImage img = null;
