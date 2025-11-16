@@ -1,4 +1,4 @@
-package fipaan.com.wrapper;
+package math;
 
 import java.awt.Dimension;
 import java.awt.Point;
