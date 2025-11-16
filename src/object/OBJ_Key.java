@@ -1,16 +1,13 @@
 package object;
 
 import javax.imageio.ImageIO;
+import utils.Resources;
 
 public class OBJ_Key extends SuperObject{
 
     public OBJ_Key(){
 
         name = "Key";
-        try{
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/key.png"));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        image = Resources.loadImage("/resources/objects/key.png");
     }
 }
