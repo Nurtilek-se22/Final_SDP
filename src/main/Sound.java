@@ -8,30 +8,26 @@ import utils.Resources;
 
 public class Sound {
     Clip clip;
-    URL soundURL []= new URL[30];
+    URL[] soundURL = new URL[SoundName.values().length];
 
     public Sound() {
-        soundURL[0] = Resources.loadURL("/resources/sound/BlueBoyAdventure.wav");
-        soundURL[1] = Resources.loadURL("/resources/sound/coin.wav");
-        soundURL[2] = Resources.loadURL("/resources/sound/powerup.wav");
-        soundURL[3] = Resources.loadURL("/resources/sound/unlock.wav");
-        soundURL[4] = Resources.loadURL("/resources/sound/fanfare.wav");
+        for (SoundName name : SoundName.values()) {
+            soundURL[name.index] = name.load();
+        }
     }
 
-    public void setFile(int i){
-        clip = Resources.loadClip(soundURL[i]);
+    public void setFile(SoundName name) {
+        clip = Resources.loadClip(soundURL[name.index]);
     }
 
-    public void play(){
-
+    public void play() {
         clip.start();
     }
 
-    public void loop(){
+    public void loop() {
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
-    public void stop(){
-
+    public void stop() {
         clip.stop();
     }
 }
