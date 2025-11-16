@@ -57,7 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         aSetter.setObject();
 
-        playMusic(0);
+        playMusic(SoundName.Music);
     }
 
     public void startGameThread() {
@@ -152,17 +152,17 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.dispose();
     }
-    public void playMusic(int i){
-        music.setFile(i);
+    public void playMusic(SoundName name){
+        music.setFile(name);
         music.play();
         music.loop();
     }
     public void stopMusic(){
         music.stop();
     }
-    public void playSE(int i){
-        se.setFile(i);
-        se .play();
+    public void playSE(SoundName name){
+        se.setFile(name);
+        se.play();
     }
 
 }

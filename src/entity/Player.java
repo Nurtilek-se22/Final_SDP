@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import utils.Resources;
+import main.SoundName;
 import math.FPoint;
 
 public class Player extends Entity {
@@ -123,13 +124,13 @@ public class Player extends Entity {
 
         switch (objectName){
             case "Key":
-                gp.playSE(1);
+                gp.playSE(SoundName.Coin);
                 hasKey++;
                 gp.obj[i] = null;
                 gp.ui.showMessage("You got a key!");
                 break;
             case "Door":
-                gp.playSE(3);
+                gp.playSE(SoundName.Unlock);
                 if(hasKey >0){
                     gp.obj[i] = null;
                     hasKey--;
@@ -140,7 +141,7 @@ public class Player extends Entity {
                 }
                 break;
             case "Boots":
-                gp.playSE(2);
+                gp.playSE(SoundName.PowerUp);
                 speed += 2;
                 gp.obj[i] = null;
                 gp.ui.showMessage("Speed up!");
@@ -148,7 +149,7 @@ public class Player extends Entity {
             case "Cheat":
                 gp.ui.gameFinished = true;
                 gp.stopMusic();
-                gp.playSE(4);
+                gp.playSE(SoundName.Fanfare);
                 break;
 
         }
