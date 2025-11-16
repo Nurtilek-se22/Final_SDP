@@ -15,10 +15,12 @@ public final class Resources {
     private static final String RESOURCES_PATH       = Resources.class.getResource("/").getPath();
     private static final int    RESOURCES_PATH_LEN   = RESOURCES_PATH.length();
     private static final String IMG_PLACEHOLDER_PATH = "/resources/placeholder/missing.png";
+    public static final Path PATH = new Path("/resources/");
 
     public static InputStream loadInputStream(String path) {
         return Resources.class.getResourceAsStream(path);
     }
+    public static InputStream loadInputStream(Path base, String path) { return loadInputStream(base.getPath(path)); }
     private static void logSuccess(String path) {
         Logger.info.printfn("Successfully loaded \"%s\"!", path);
     }
@@ -52,9 +54,11 @@ public final class Resources {
         logSuccess(path);
         return result;
     }
-    public static Clip loadClip(URL url) {
+    public static URL loadURL(Path base, String path) { return loadURL(base.getPath(path)); }
+
+    public static Clip loadClip(Path base, URL url) {
         AudioInputStream audio = null;
-        String path = url.getPath().substring(RESOURCES_PATH_LEN - 1);
+        String path = base.getPath(url.getPath().substring(RESOURCES_PATH_LEN - 1));
         try {
             audio = AudioSystem.getAudioInputStream(url);
         } catch (UnsupportedAudioFileException e) {
@@ -74,6 +78,7 @@ public final class Resources {
         }
         return clip;
     }
+    public static Clip loadClip(URL url) { return loadClip(PATH, url); }
 
     public static BufferedImage loadImage(String path) {
         BufferedImage img = null;
@@ -93,4 +98,5 @@ public final class Resources {
         }
         return img;
     }
+    public static BufferedImage loadImage(Path base, String path) { return loadImage(base.getPath(path)); }
 }

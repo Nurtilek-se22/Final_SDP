@@ -8,6 +8,6 @@ public class OBJ_Key extends SuperObject{
     public OBJ_Key(){
 
         name = "Key";
-        image = Resources.loadImage("/resources/objects/key.png");
+        image = Resources.loadImage(PATH, "key.png");
     }
 }

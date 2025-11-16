@@ -6,6 +6,6 @@ import utils.Resources;
 public class OBJ_Boots extends SuperObject{
     public OBJ_Boots(){
         name = "Boots";
-        image = Resources.loadImage("/resources/objects/boots.png");
+        image = Resources.loadImage(PATH, "boots.png");
     }
 }

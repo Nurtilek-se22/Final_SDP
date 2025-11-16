@@ -8,8 +8,11 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import utils.Resources;
+import utils.Path;
 
 public class TileManager {
+    public static final Path TILES_PATH = new Path(Resources.PATH, "tiles/");
+    public static final Path MAPS_PATH = new Path(Resources.PATH, "maps/");
 
     GamePanel gp;
     public Tile [] tile;
@@ -21,35 +24,35 @@ public class TileManager {
         tile = new Tile[10];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
-        loadMap("/resources/maps/world01.txt");
+        loadMap("world01.txt");
     }
 
     public void getTileImage() {
         tile[0] = new Tile();
-        tile[0].image = Resources.loadImage("/resources/tiles/grass.png");
+        tile[0].image = Resources.loadImage(TILES_PATH, "grass.png");
 
         tile[1] = new Tile();
-        tile[1].image = Resources.loadImage("/resources/tiles/wall.png");
+        tile[1].image = Resources.loadImage(TILES_PATH, "wall.png");
         tile[1].collision = true;
 
         tile[2] = new Tile();
-        tile[2].image = Resources.loadImage("/resources/tiles/water.png");
+        tile[2].image = Resources.loadImage(TILES_PATH, "water.png");
         tile[2].collision = true;
 
         tile[3] = new Tile();
-        tile[3].image = Resources.loadImage("/resources/tiles/earth.png");
+        tile[3].image = Resources.loadImage(TILES_PATH, "earth.png");
 
         tile[4] = new Tile();
-        tile[4].image = Resources.loadImage("/resources/tiles/tree.png");
+        tile[4].image = Resources.loadImage(TILES_PATH, "tree.png");
         tile[4].collision = true;
 
         tile[5] = new Tile();
-        tile[5].image = Resources.loadImage("/resources/tiles/sand.png");
+        tile[5].image = Resources.loadImage(TILES_PATH, "sand.png");
     }
 
     public void loadMap(String filePath){
         try{
-            InputStream is = getClass().getResourceAsStream(filePath);
+            InputStream is = getClass().getResourceAsStream(MAPS_PATH.getPath(filePath));
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             int col = 0;

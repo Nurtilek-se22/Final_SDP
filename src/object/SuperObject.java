@@ -1,12 +1,15 @@
 package object;
 
 import main.GamePanel;
+import utils.Resources;
+import utils.Path;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+    
 
 public class SuperObject {
+    public static final Path PATH = new Path(Resources.PATH, "objects/");
 
     public BufferedImage image;
     public String name;

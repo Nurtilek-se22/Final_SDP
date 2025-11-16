@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import utils.Resources;
+import utils.Path;
 import main.SoundName;
 import math.FPoint;
 
@@ -24,6 +25,8 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public int hasKey = 0;
+    
+    public static final Path PATH = new Path(Resources.PATH, "player/");
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -48,10 +51,10 @@ public class Player extends Entity {
 
         frame = new Frame();
         sprite = new SpriteAtlasBuilder()
-                    .setUp("/resources/player/boy_up_1.png", "/resources/player/boy_up_2.png")
-                    .setDown("/resources/player/boy_down_1.png", "/resources/player/boy_down_2.png")
-                    .setLeft("/resources/player/boy_left_1.png", "/resources/player/boy_left_2.png")
-                    .setRight("/resources/player/boy_right_1.png", "/resources/player/boy_right_2.png")
+                    .setUp(PATH, "boy_up_1.png", "boy_up_2.png")
+                    .setDown(PATH, "boy_down_1.png", "boy_down_2.png")
+                    .setLeft(PATH, "boy_left_1.png", "boy_left_2.png")
+                    .setRight(PATH, "boy_right_1.png", "boy_right_2.png")
                     .build()
                     .setActiveFrame(frame, Direction.Down);
         setAttackStrategy(new MagicAttack());

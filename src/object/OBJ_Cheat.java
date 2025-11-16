@@ -7,6 +7,6 @@ public class OBJ_Cheat extends SuperObject
 {
     public OBJ_Cheat() {
         name = "Cheat";
-        image = Resources.loadImage("/resources/objects/chest.png");
+        image = Resources.loadImage(PATH, "chest.png");
     }
 }
