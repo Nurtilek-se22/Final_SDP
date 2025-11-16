@@ -36,7 +36,8 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     Thread gameThread;
 
-    //ENTITY AND OBJECT
+    // GAME DATA
+    public JFrame window;
     public Player player = new Player(this, keyH);
     public SuperObject obj[] = new SuperObject[10];
 
@@ -44,8 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-    public GamePanel() {
-
+    public GamePanel(JFrame window) {
+        this.window = window;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -63,6 +64,14 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void killGame() {
+        if (gameThread != null) {
+            gameThread.interrupt();
+            gameThread = null;
+        }
+        window.dispose();
     }
 
     @Override
