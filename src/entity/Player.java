@@ -13,6 +13,15 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import utils.Resources;
+import utils.Path;
+import utils.Timer;
+import main.SoundName;
+import math.FPoint;
+import event.GameEvent;
+import observer.EventObserver;
+import observer.ConsoleObserver;
 
 public class Player extends Entity {
 
@@ -21,6 +30,21 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public int hasKey = 0;
+
+    ArrayList<EventObserver> observers = new ArrayList<>();
+    
+    public static final Path PATH = new Path(Resources.PATH, "player/");
+    Timer timerSprite = new Timer(0.2);
+
+    public void addEventListener(EventObserver observer) {
+        observers.add(observer);
+    }
+
+    public void notify(GameEvent event) {
+        for (EventObserver observer : observers) {
+            observer.handleEvent(event);
+        }
+    }
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -33,53 +57,27 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
-        solidAreaDefaultX = solidArea.x;
-        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
 
-        setDefaultValues();
-        getPlayerImage();
-        setAttackStrategy(new MagicAttack());
-    }
+        pos = new Point(gp.tileSize * 23, gp.tileSize * 21);
+        speedScalar = 4;
+        speed = new FPoint();
 
-    public void setDefaultValues(){
-        worldX = gp.tileSize * 23;
-        worldY = gp.tileSize * 21;
-        speed = 4;
-        direction = "down";
-    }
-    private static final String IMG_PLACEHOLDER_PATH = "/resources/placeholder/missing.png";
-    private BufferedImage loadImage(String path) {
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(getClass().getResourceAsStream(path));
-            System.out.printf("Successfully loaded \"%s\"!\r\n", path);
-        } catch (Exception e) {
-            try {
-                System.err.printf("Couldn't load \"%s\" because:\r\n", path);
-                e.printStackTrace();
-                img = ImageIO.read(getClass().getResourceAsStream(IMG_PLACEHOLDER_PATH));
-                System.out.printf("Loaded placeholder for \"%s\"\r\n", path);
-            } catch (Exception ep) {
-                throw new RuntimeException(String.format("Couldn't load placeholder \"%s\"", IMG_PLACEHOLDER_PATH), ep);
-            }
-        }
-        return img;
-    }
-    private void getPlayerImage(){
-        up1    = loadImage("/resources/player/boy_up_1.png");
-        up2    = loadImage("/resources/player/boy_up_2.png");
-        down1  = loadImage("/resources/player/boy_down_1.png");
-        down2  = loadImage("/resources/player/boy_down_2.png");
-        left1  = loadImage("/resources/player/boy_left_1.png");
-        left2  = loadImage("/resources/player/boy_left_2.png");
-        right1 = loadImage("/resources/player/boy_right_1.png");
-        right2 = loadImage("/resources/player/boy_right_2.png");
+        frame = new Frame();
+        sprite = new SpriteAtlasBuilder()
+                    .setUp(PATH, "boy_up_1.png", "boy_up_2.png")
+                    .setDown(PATH, "boy_down_1.png", "boy_down_2.png")
+                    .setLeft(PATH, "boy_left_1.png", "boy_left_2.png")
+                    .setRight(PATH, "boy_right_1.png", "boy_right_2.png")
+                    .build()
+                    .setActiveFrame(frame, Direction.Down);
+        setAttackStrategy(new MagicAttack());
+
+        addEventListener(new ConsoleObserver());
     }
 
     private AttackStrategy attackStrategy;
-
 
     public void setAttackStrategy(AttackStrategy strategy) {
         this.attackStrategy = strategy;
@@ -92,147 +90,94 @@ public class Player extends Entity {
 
     public void update(){
         InputAdapter input = new KeyboardAdapter(keyH);
+        Direction dir = null;
 
-        if(keyH.upPressed == true || keyH.downPressed == true ||keyH.leftPressed == true || keyH.rightPressed == true){
-            if(input.isUp() ==true){
-                direction = "up";
-            }
-            else if(keyH.downPressed ==true){
-                direction = "down";
-            }
-            else if(keyH.leftPressed ==true){
-                direction = "left";
-            }
-            else if(keyH.rightPressed ==true){
-                direction = "right";
-            }
-            if (keyH.attackPressed) {
-                performAttack();
-            }
+        speed.setLocation(0, 0);
+        if (input.isUp() == true){
+            speed.y -= 1;
+            dir = Direction.Up;
+        }
+        if(keyH.downPressed == true){
+            speed.y += 1;
+            dir = Direction.Down;
+        }
+        if(keyH.leftPressed == true){
+            speed.x -= 1;
+            dir = Direction.Left;
+        }
+        if(keyH.rightPressed == true){
+            speed.x += 1;
+            dir = Direction.Right;
+        }
+        if (dir == null) return;
+        speed.norm().scale(speedScalar);
+        sprite.setActiveFrame(frame, dir);
 
-            //CHECK TILE COLLISION
-            collisionOn = false;
-            gp.cChecker.checkTile(this);
-
-            // CHECK OBJECT COLLISION
-            int objIndex = gp.cChecker.checkObject(this,true);
-            pickUpObject(objIndex);
-
-            // IF COLLISION IS FALSE, PLAYER CAN MOVE
-            if(collisionOn == false){
-                switch (direction) {
-                    case "up":
-                        worldY -= speed;
-                        break;
-                    case "down":
-                        worldY += speed;
-                        break;
-                    case "left":
-                        worldX -= speed;
-                        break;
-                    case "right":
-                        worldX += speed;
-                        break;
-                }
-            }
-
-            spriteCounter++;
-            if(spriteCounter > 12){
-                if(spriteNum == 1){
-                    spriteNum = 2;
-                }
-                else if(spriteNum == 2){
-                    spriteNum = 1;
-                }
-                spriteCounter = 0;
-            }
+        if (keyH.attackPressed) {
+            performAttack();
         }
 
+        //CHECK TILE COLLISION
+        collisionOn = false;
+        gp.cChecker.checkTile(this);
 
+        // CHECK OBJECT COLLISION
+        int objIndex = gp.cChecker.checkObject(this,true);
+        pickUpObject(objIndex);
+
+        // IF COLLISION IS FALSE, PLAYER CAN MOVE
+        if (collisionOn == false) {
+            pos.x += speed.x;
+            pos.y += speed.y;
+        }
+
+        if(timerSprite.isFinished()) {
+            frame.shift();
+            timerSprite.reset();
+        }
     }
 
     public void pickUpObject(int i){
+        if (i == -1) return;
+        String objectName = gp.obj[i].name;
 
-        if(i !=999){
-            String objectName = gp.obj[i].name;
-
-            switch (objectName){
-                case "Key":
-                    gp.playSE(1);
-                    hasKey++;
+        switch (objectName) {
+            case "Key":
+                gp.playSE(SoundName.Coin);
+                hasKey++;
+                gp.obj[i] = null;
+                gp.ui.showMessage("You got a key!");
+                notify(GameEvent.PickUpKey);
+                break;
+            case "Door":
+                if (hasKey > 0) {
+                    notify(GameEvent.OpenDoor);
+                    gp.playSE(SoundName.Unlock);
                     gp.obj[i] = null;
-                    gp.ui.showMessage("You got a key!");
-                    break;
-                case "Door":
-                    gp.playSE(3);
-                    if(hasKey >0){
-                        gp.obj[i] = null;
-                        hasKey--;
-                        gp.ui.showMessage("You opened the door!");
-                    }
-                    else{
-                        gp.ui.showMessage("You need a key!");
-                    }
-                    break;
-                case "Boots":
-                    gp.playSE(2);
-                    speed += 2;
-                    gp.obj[i] = null;
-                    gp.ui.showMessage("Speed up!");
-                    break;
-                case "Cheat":
-                    gp.ui.gameFinished = true;
-                    gp.stopMusic();
-                    gp.playSE(4);
-                    break;
+                    hasKey--;
+                    gp.ui.showMessage("You opened the door!");
+                } else {
+                    gp.ui.showMessage("You need a key!");
+                }
+                break;
+            case "Boots":
+                notify(GameEvent.PickUpBoots);
+                gp.playSE(SoundName.PowerUp);
+                speedScalar += 2;
+                gp.obj[i] = null;
+                gp.ui.showMessage("Speed up!");
+                break;
+            case "Cheat":
+                if (!gp.ui.gameFinished) notify(GameEvent.GameFinished);
+                gp.ui.gameFinished = true;
+                gp.stopMusic();
+                gp.playSE(SoundName.Fanfare);
+                break;
 
-            }
         }
-
     }
 
     public void draw(Graphics2D g2){
-//        g2.setColor(Color.white);
-//
-//        g2.fillRect(x,y,gp.tileSize,gp.tileSize);
-
-        BufferedImage image = null;
-
-        switch (direction){
-        case "up":
-            if(spriteNum == 1){
-                image = up1;
-            }
-            if(spriteNum == 2){
-                image = up2;
-            }
-            break;
-        case "down":
-            if(spriteNum == 1){
-                image = down1;
-            }
-            if(spriteNum == 2){
-                image = down2;
-            }
-            break;
-        case "left":
-            if(spriteNum == 1){
-                image = left1;
-            }
-            if(spriteNum == 2){
-                image = left2;
-            }
-            break;
-
-        case "right":
-            if(spriteNum == 1){
-                image = right1;
-            }
-            if(spriteNum == 2){
-                image = right2;
-            }
-            break;
-        }
-        g2.drawImage(image,screenX,screenY,gp.tileSize,gp.tileSize,null);
+        g2.drawImage(frame.getActiveImage(),screenX,screenY,gp.tileSize,gp.tileSize,null);
     }
 }

@@ -36,16 +36,17 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this);
     Thread gameThread;
 
-    //ENTITY AND OBJECT
+    // GAME DATA
+    public JFrame window;
     public Player player = new Player(this, keyH);
-    public SuperObject obj[] = new SuperObject[10];
+    public SuperObject[] obj = new SuperObject[10];
 
     //Set players's default position
     int playerX = 100;
     int playerY = 100;
     int playerSpeed = 4;
-    public GamePanel() {
-
+    public GamePanel(JFrame window) {
+        this.window = window;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -57,12 +58,20 @@ public class GamePanel extends JPanel implements Runnable {
 
         aSetter.setObject();
 
-        playMusic(0);
+        playMusic(SoundName.Music);
     }
 
-    public void startGameTread() {
+    public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void killGame() {
+        if (gameThread != null) {
+            gameThread.interrupt();
+            gameThread = null;
+        }
+        window.dispose();
     }
 
     @Override
@@ -120,11 +129,11 @@ public class GamePanel extends JPanel implements Runnable {
                 delta--;
                 drawCount++;
             }
-            if(timer >= 1000000000){
-                System.out.println("FPS: "+drawCount);
-                drawCount = 0;
-                timer = 0;
-            }
+            // if(timer >= 1000000000){
+            //     System.out.println("FPS: "+drawCount);
+            //     drawCount = 0;
+            //     timer = 0;
+            // }
         }
     }
     public void update(){
@@ -152,17 +161,17 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.dispose();
     }
-    public void playMusic(int i){
-        music.setFile(i);
+    public void playMusic(SoundName name){
+        music.setFile(name);
         music.play();
         music.loop();
     }
     public void stopMusic(){
         music.stop();
     }
-    public void playSE(int i){
-        se.setFile(i);
-        se .play();
+    public void playSE(SoundName name){
+        se.setFile(name);
+        se.play();
     }
 
 }

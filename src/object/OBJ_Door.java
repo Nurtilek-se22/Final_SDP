@@ -1,16 +1,13 @@
 package object;
 
 import javax.imageio.ImageIO;
+import utils.Resources;
 
 public class OBJ_Door extends SuperObject{
-    public OBJ_Door(){
-
+    public OBJ_Door(int x, int y) {
+        super(x, y);
         name = "Door";
-        try{
-            image = ImageIO.read(getClass().getResourceAsStream("/objects/door.png"));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        image = Resources.loadImage(PATH, "door.png");
         collision = true;
     }
 }
