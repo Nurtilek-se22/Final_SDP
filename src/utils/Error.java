@@ -29,6 +29,11 @@ public class Error {
     public static RuntimeException New(Throwable t) {
         return dropFrames(new RuntimeException(t));
     }
+
+    public static void expectNotNull(Object value, String name) {
+        if (value != null) return;
+        throw Error.New("expected %s, got null", name);
+    }
     
     public static RuntimeException TODO(String fmt, Object... args) { return New("NOT IMPLEMENTED: " + fmt, args); }
     public static RuntimeException TODO(String str) { return TODO("%s", str); }
